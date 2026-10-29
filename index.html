@@ -1,0 +1,760 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10131f">
+  <title>رفيق AI | المساعد العربي</title>
+
+  <style>
+    :root {
+      --bg: #10131f;
+      --panel: #191e2d;
+      --panel2: #22293b;
+      --text: #f4f5fb;
+      --muted: #a3abc0;
+      --accent: #8b7cff;
+      --border: #30374b;
+      --user: #5748b8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Tahoma, sans-serif;
+      min-height: 100vh;
+    }
+
+    button, textarea, input, select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      max-width: 900px;
+      margin: auto;
+      border-inline: 1px solid var(--border);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #8b7cff, #4bc6d9);
+      font-size: 23px;
+      color: white;
+    }
+
+    .brand {
+      flex: 1;
+    }
+
+    .brand h1 {
+      margin: 0 0 5px;
+      font-size: 18px;
+    }
+
+    .brand p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .settings-btn, .secondary-btn {
+      border: 1px solid var(--border);
+      background: var(--panel2);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 11px;
+    }
+
+    .intro {
+      text-align: center;
+      padding: 25px 15px 10px;
+    }
+
+    .intro .spark {
+      font-size: 36px;
+    }
+
+    .intro h2 {
+      font-size: 23px;
+      margin: 8px 0;
+    }
+
+    .intro p {
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      padding: 15px;
+    }
+
+    .suggestion {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+
+    .suggestion:hover {
+      border-color: var(--accent);
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 17px;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
+      max-width: 100%;
+    }
+
+    .message.user {
+      flex-direction: row-reverse;
+    }
+
+    .avatar {
+      flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      background: var(--panel2);
+      font-size: 16px;
+    }
+
+    .user .avatar {
+      background: var(--user);
+    }
+
+    .bubble-wrap {
+      max-width: min(82%, 650px);
+    }
+
+    .bubble {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.85;
+      font-size: 15px;
+      padding: 12px 15px;
+      border-radius: 15px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+    }
+
+    .user .bubble {
+      background: var(--user);
+      border-color: transparent;
+      border-top-left-radius: 4px;
+    }
+
+    .assistant .bubble {
+      border-top-right-radius: 4px;
+    }
+
+    .message-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+      padding-inline: 4px;
+    }
+
+    .tiny-btn {
+      background: transparent;
+      color: var(--muted);
+      border: 0;
+      font-size: 12px;
+      padding: 4px;
+    }
+
+    .tiny-btn:hover {
+      color: white;
+    }
+
+    .typing {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 8px;
+    }
+
+    .composer-area {
+      background: var(--bg);
+      padding: 12px 14px max(12px, env(safe-area-inset-bottom));
+      border-top: 1px solid var(--border);
+    }
+
+    .composer {
+      display: flex;
+      align-items: flex-end;
+      gap: 9px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 8px;
+    }
+
+    #userInput {
+      flex: 1;
+      min-width: 0;
+      resize: none;
+      max-height: 140px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      padding: 10px 7px;
+      line-height: 1.6;
+    }
+
+    #userInput::placeholder {
+      color: #858da4;
+    }
+
+    #sendBtn {
+      flex-shrink: 0;
+      width: 43px;
+      height: 43px;
+      border: 0;
+      border-radius: 13px;
+      background: var(--accent);
+      color: white;
+      font-size: 20px;
+    }
+
+    #sendBtn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 9px;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: #000a;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 10;
+    }
+
+    .overlay.open {
+      display: flex;
+    }
+
+    .settings-card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      max-height: 90dvh;
+      overflow-y: auto;
+    }
+
+    .settings-card h2 {
+      margin-top: 0;
+    }
+
+    .settings-card label {
+      display: block;
+      margin: 17px 0 7px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .settings-card input, .settings-card select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+    }
+
+    .warning {
+      background: #342d20;
+      color: #f2d59a;
+      border-radius: 10px;
+      padding: 11px;
+      line-height: 1.7;
+      font-size: 12px;
+      margin-top: 14px;
+    }
+
+    .settings-actions {
+      display: flex;
+      gap: 9px;
+      margin-top: 20px;
+    }
+
+    .primary-btn {
+      flex: 1;
+      border: 0;
+      border-radius: 11px;
+      background: var(--accent);
+      color: white;
+      padding: 12px;
+    }
+
+    .status {
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    @media (max-width: 480px) {
+      header {
+        padding: 11px;
+      }
+
+      .intro {
+        padding-top: 18px;
+      }
+
+      .intro h2 {
+        font-size: 20px;
+      }
+
+      .settings-btn {
+        padding: 9px;
+        font-size: 12px;
+      }
+
+      #messages {
+        padding: 12px;
+      }
+
+      .bubble-wrap {
+        max-width: 88%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <div class="logo">✦</div>
+
+      <div class="brand">
+        <h1>رفيق AI</h1>
+        <p id="connectionStatus">مساعدك الذكي باللغة العربية</p>
+      </div>
+
+      <button class="settings-btn" id="openSettings">
+        ⚙ الإعدادات
+      </button>
+    </header>
+
+    <section class="intro" id="welcome">
+      <div class="spark">✦</div>
+      <h2>أهلاً بك، كيف أساعدك؟</h2>
+      <p>
+        اسألني، تعلّم معي، اكتب كوداً، أو ناقش أي فكرة.
+        <br>أنا هنا لمساعدتك.
+      </p>
+    </section>
+
+    <div class="suggestions" id="suggestions">
+      <button class="suggestion" data-prompt="علّمني JavaScript من الصفر بخطة عملية">💻 تعلّم البرمجة</button>
+      <button class="suggestion" data-prompt="اقترح علي أفكار مشاريع ذكاء اصطناعي عملية ومميزة">🧠 أفكار AI</button>
+      <button class="suggestion" data-prompt="ساعدني في تنظيم يومي وتحسين إنتاجيتي">📅 تنظيم يومي</button>
+      <button class="suggestion" data-prompt="اكتب لي قصة قصيرة فلسفية ومميزة">✍️ اكتب قصة</button>
+    </div>
+
+    <main id="messages" aria-live="polite"></main>
+
+    <div class="composer-area">
+      <div class="composer">
+        <textarea
+          id="userInput"
+          rows="1"
+          maxlength="12000"
+          placeholder="اكتب رسالتك هنا..."
+          aria-label="رسالتك"
+        ></textarea>
+
+        <button id="sendBtn" aria-label="إرسال الرسالة">➤</button>
+      </div>
+
+      <div class="footer-note">
+        قد تخطئ إجابات الذكاء الاصطناعي؛ تحقّق من المعلومات المهمة.
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="settingsOverlay">
+    <section class="settings-card">
+      <h2>إعدادات الاتصال</h2>
+      <p style="color:var(--muted);font-size:13px;line-height:1.8">
+        أدخل مفتاح OpenRouter واختر النموذج الذي تريد استخدامه.
+      </p>
+
+      <label for="apiKey">مفتاح OpenRouter API</label>
+      <input
+        id="apiKey"
+        type="password"
+        placeholder="ألصق مفتاحك هنا: sk-or-v1-..."
+        autocomplete="off"
+        spellcheck="false"
+      >
+
+      <label for="model">النموذج</label>
+      <select id="model">
+        <option value="openrouter/free">OpenRouter Free — اختيار تلقائي</option>
+        <option value="nvidia/nemotron-3.5-super:free">NVIDIA Nemotron 3 Super — مجاني عند التوفر</option>
+      </select>
+
+      <div class="warning">
+        تنبيه أمني: هذا إصدار تجريبي يعمل من المتصفح. المفتاح الذي تدخله
+        يُستخدم في طلبات المتصفح ويمكن كشفه لمن يستطيع فحص التطبيق.
+        لا تستخدم مفتاحاً حساساً أو تضعه في موقع عام.
+      </div>
+
+      <div id="settingsStatus" class="status">
+        المفتاح لا يُحفظ في التخزين الدائم؛ سيبقى في الذاكرة حتى إعادة تحميل الصفحة.
+      </div>
+
+      <div class="settings-actions">
+        <button class="primary-btn" id="saveSettings">حفظ الإعدادات</button>
+        <button class="secondary-btn" id="closeSettings">إغلاق</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    "use strict";
+
+    // =====================================================
+    // إعدادات التطبيق
+    // لا يوجد أي مفتاح API حقيقي داخل هذا الملف.
+    // أدخل مفتاحك من نافذة الإعدادات عند تشغيل الصفحة.
+    // =====================================================
+
+    const API_URL = "https://openrouter.ai/api/v1/chat/completions";
+
+    let apiKey = "";
+    let model = "openrouter/free";
+    let conversation = [];
+    let isSending = false;
+    let currentController = null;
+
+    const messagesEl = document.getElementById("messages");
+    const inputEl = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const welcomeEl = document.getElementById("welcome");
+    const suggestionsEl = document.getElementById("suggestions");
+    const overlay = document.getElementById("settingsOverlay");
+    const apiKeyEl = document.getElementById("apiKey");
+    const modelEl = document.getElementById("model");
+    const connectionStatus = document.getElementById("connectionStatus");
+    const settingsStatus = document.getElementById("settingsStatus");
+
+    function openSettings() {
+      apiKeyEl.value = apiKey;
+      modelEl.value = model;
+      overlay.classList.add("open");
+    }
+
+    function closeSettings() {
+      overlay.classList.remove("open");
+    }
+
+    document.getElementById("openSettings").addEventListener("click", openSettings);
+    document.getElementById("closeSettings").addEventListener("click", closeSettings);
+
+    overlay.addEventListener("click", function (event) {
+      if (event.target === overlay) closeSettings();
+    });
+
+    document.getElementById("saveSettings").addEventListener("click", function () {
+      const newKey = apiKeyEl.value.trim();
+
+      if (!newKey) {
+        settingsStatus.textContent = "أدخل مفتاح OpenRouter أولاً.";
+        apiKeyEl.focus();
+        return;
+      }
+
+      if (!newKey.startsWith("sk-or-")) {
+        settingsStatus.textContent =
+          "تحقّق من المفتاح؛ مفاتيح OpenRouter عادةً تبدأ بـ sk-or-.";
+        apiKeyEl.focus();
+        return;
+      }
+
+      apiKey = newKey;
+      model = modelEl.value;
+
+      settingsStatus.textContent = "تم حفظ الإعدادات في ذاكرة الصفحة فقط.";
+      connectionStatus.textContent = "المفتاح موجود في الذاكرة — جاهز للتجربة";
+      closeSettings();
+      inputEl.focus();
+    });
+
+    function addMessage(role, text) {
+      const row = document.createElement("div");
+      row.className = "message " + role;
+
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.textContent = role === "user" ? "👤" : "✦";
+
+      const wrap = document.createElement("div");
+      wrap.className = "bubble-wrap";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+
+      // نستخدم textContent لتجنب تنفيذ HTML قد يأتي من المستخدم أو النموذج.
+      bubble.textContent = text;
+
+      wrap.appendChild(bubble);
+      row.appendChild(avatar);
+      row.appendChild(wrap);
+      messagesEl.appendChild(row);
+
+      if (role === "assistant") {
+        const actions = document.createElement("div");
+        actions.className = "message-actions";
+
+        const copyBtn = document.createElement("button");
+        copyBtn.className = "tiny-btn";
+        copyBtn.textContent = "نسخ الرد";
+
+        copyBtn.addEventListener("click", async function () {
+          try {
+            await navigator.clipboard.writeText(text);
+            copyBtn.textContent = "تم النسخ ✓";
+          } catch {
+            copyBtn.textContent = "تعذّر النسخ";
+          }
+        });
+
+        actions.appendChild(copyBtn);
+        wrap.appendChild(actions);
+      }
+
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return { row, bubble };
+    }
+
+    function showTyping() {
+      const row = document.createElement("div");
+      row.className = "typing";
+      row.textContent = "✦ رفيق يفكر الآن...";
+      messagesEl.appendChild(row);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return row;
+    }
+
+    function setSending(value) {
+      isSending = value;
+      sendBtn.disabled = value;
+      sendBtn.textContent = value ? "…" : "➤";
+    }
+
+    function setWelcomeHidden() {
+      welcomeEl.style.display = "none";
+      suggestionsEl.style.display = "none";
+    }
+
+    async function sendMessage(prefilledText) {
+      if (isSending) return;
+
+      const text = (typeof prefilledText === "string" ? prefilledText : inputEl.value).trim();
+      if (!text) return;
+
+      if (!apiKey) {
+        openSettings();
+        settingsStatus.textContent = "أدخل مفتاح OpenRouter ثم اضغط حفظ الإعدادات.";
+        return;
+      }
+
+      setWelcomeHidden();
+      addMessage("user", text);
+
+      conversation.push({ role: "user", content: text });
+      inputEl.value = "";
+      resizeInput();
+
+      setSending(true);
+      const typingEl = showTyping();
+      currentController = new AbortController();
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer " + apiKey,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [
+              {
+                role: "system",
+                content:
+                  "أنت رفيق، مساعد ذكاء اصطناعي ودود ومفيد. أجب باللغة العربية افتراضياً، " +
+                  "إلا إذا طلب المستخدم لغة أخرى. نظّم الإجابات بعناوين وقوائم عند الحاجة. " +
+                  "كن واضحاً وعملياً، ولا تدّعِ أنك نفذت أمراً لم تنفذه."
+              },
+              ...conversation
+            ],
+            temperature: 0.7,
+            max_tokens: 1800
+          }),
+          signal: currentController.signal
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          const apiMessage =
+            data && data.error && data.error.message
+              ? data.error.message
+              : "لم يتمكن الخادم من معالجة الطلب.";
+
+          let help = "خطأ " + response.status + ": " + apiMessage;
+
+          if (response.status === 401) {
+            help += "\nتحقّق من صحة مفتاح API.";
+          } else if (response.status === 402) {
+            help += "\nتحقّق من شروط استخدام النموذج وحالة حسابك.";
+          } else if (response.status === 429) {
+            help += "\nتم تجاوز حد الطلبات؛ انتظر قليلاً ثم حاول مجدداً.";
+          }
+
+          throw new Error(help);
+        }
+
+        const answer =
+          data &&
+          data.choices &&
+          data.choices[0] &&
+          data.choices[0].message &&
+          data.choices[0].message.content;
+
+        if (typeof answer !== "string" || !answer.trim()) {
+          throw new Error("وصل رد فارغ من النموذج. جرّب نموذجاً آخر.");
+        }
+
+        conversation.push({ role: "assistant", content: answer });
+        addMessage("assistant", answer);
+        connectionStatus.textContent = "متصل عبر OpenRouter";
+      } catch (error) {
+        if (error.name === "AbortError") {
+          addMessage("assistant", "تم إلغاء الطلب.");
+        } else {
+          const isNetworkError =
+            error instanceof TypeError &&
+            /fetch|network|load/i.test(error.message);
+
+          let errorText = error.message || "حدث خطأ غير معروف.";
+
+          if (isNetworkError) {
+            errorText =
+              "تعذّر الاتصال بـ OpenRouter من المعاينة.\n\n" +
+              "تأكد من اتصال الإنترنت. إذا استمرت المشكلة، فقد يكون السبب " +
+              "قيود CORS أو بيئة المعاينة. عندها نحتاج إلى وسيط خلفي آمن بدلاً " +
+              "من الاتصال المباشر من المتصفح.";
+          }
+
+          addMessage("assistant", "⚠️ " + errorText);
+          connectionStatus.textContent = "تعذّر إكمال آخر طلب";
+        }
+      } finally {
+        typingEl.remove();
+        currentController = null;
+        setSending(false);
+        inputEl.focus();
+      }
+    }
+
+    function resizeInput() {
+      inputEl.style.height = "auto";
+      inputEl.style.height = Math.min(inputEl.scrollHeight, 140) + "px";
+    }
+
+    sendBtn.addEventListener("click", function () {
+      sendMessage();
+    });
+
+    inputEl.addEventListener("input", resizeInput);
+
+    inputEl.addEventListener("keydown", function (event) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+
+    suggestionsEl.addEventListener("click", function (event) {
+      const button = event.target.closest("[data-prompt]");
+      if (!button) return;
+
+      inputEl.value = button.dataset.prompt;
+      sendMessage(button.dataset.prompt);
+    });
+
+    // بدء التشغيل
+    addMessage(
+      "assistant",
+      "مرحباً! أنا رفيق AI. أدخل مفتاح OpenRouter من الإعدادات، " +
+      "ثم اكتب سؤالك وسأحاول مساعدتك."
+    );
+  </script>
+</body>
+</html>
